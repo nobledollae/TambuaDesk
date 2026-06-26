@@ -6,12 +6,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/admin-test', function () {
     return 'Welcome Administrator!';
 })->middleware('role:admin');
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
