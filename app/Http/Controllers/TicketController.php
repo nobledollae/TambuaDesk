@@ -10,17 +10,19 @@ class TicketController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+   public function index()
+{
+    $tickets = \App\Models\Ticket::latest()->paginate(10);
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    return view('tickets.index', compact('tickets'));
+}
     public function create()
 {
     return view('tickets.create');
+}
+public function show(Ticket $ticket)
+{
+    return view('tickets.show', compact('ticket'));
 }
    public function store(Request $request)
 {
@@ -41,32 +43,36 @@ class TicketController extends Controller
 
     return redirect('/tickets/create')->with('success', 'Ticket created successfully!');
 }
-    public function show(Ticket $ticket)
-    {
-        //
-    }
+    public function edit(Ticket $ticket)
+{
+    return view('tickets.edit', compact('ticket'));
+}
+    public function update(Request $request, Ticket $ticket)
+{
+    $request->validate([
+        'title' => 'required|max:255',
+        'description' => 'required',
+        'priority' => 'required',
+        'status' => 'required',
+    ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ticket $ticket)
-    {
-        //
-    }
+    $ticket->update([
+        'title' => $request->title,
+        'description' => $request->description,
+        'priority' => $request->priority,
+        'status' => $request->status,
+    ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ticket $ticket)
-    {
-        //
-    }
+    return redirect()
+        ->route('tickets.index')
+        ->with('success', 'Ticket updated successfully.');
+}
+    public function destroy(Ticket $ticket)
+{
+    $ticket->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ticket $ticket)
-    {
-        //
-    }
+    return redirect()
+        ->route('tickets.index')
+        ->with('success', 'Ticket deleted successfully.');
+}
 }
