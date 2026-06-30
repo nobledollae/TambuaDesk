@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Activity;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-   public function index()
+  public function index()
 {
-    $tickets = \App\Models\Ticket::latest()->paginate(10);
+    $tickets = Ticket::with('technician')
+                ->latest()
+                ->paginate(10);
 
     return view('tickets.index', compact('tickets'));
 }
@@ -22,6 +27,13 @@ class TicketController extends Controller
 }
 public function show(Ticket $ticket)
 {
+    $ticket->load(
+        'comments.user',
+        'technician',
+        'creator',
+        'activities.user'
+    );
+
     return view('tickets.show', compact('ticket'));
 }
    public function store(Request $request)
@@ -32,20 +44,35 @@ public function show(Ticket $ticket)
         'priority' => 'required'
     ]);
 
-    Ticket::create([
+   $ticket = Ticket::create([
+    
         'ticket_number' => 'TKT-' . time(),
         'title' => $request->title,
         'description' => $request->description,
         'priority' => $request->priority,
         'status' => 'Open',
-        'created_by' => 1
+        'created_by' => auth()->id()
     ]);
+
+    Activity::create([
+    'ticket_id' => $ticket->id,
+    'user_id' => Auth::id(),
+    'action' => 'created the ticket'
+]);
+
+Activity::create([
+    'ticket_id' => $ticket->id,
+    'user_id' => Auth::id(),
+    'action' => 'updated the ticket'
+]);
 
     return redirect('/tickets/create')->with('success', 'Ticket created successfully!');
 }
-    public function edit(Ticket $ticket)
+  public function edit(Ticket $ticket)
 {
-    return view('tickets.edit', compact('ticket'));
+    $technicians = User::where('role', 'technician')->get();
+
+    return view('tickets.edit', compact('ticket', 'technicians'));
 }
     public function update(Request $request, Ticket $ticket)
 {
@@ -54,6 +81,7 @@ public function show(Ticket $ticket)
         'description' => 'required',
         'priority' => 'required',
         'status' => 'required',
+        'assigned_to' => 'nullable|exists:users,id',
     ]);
 
     $ticket->update([
@@ -61,6 +89,7 @@ public function show(Ticket $ticket)
         'description' => $request->description,
         'priority' => $request->priority,
         'status' => $request->status,
+        'assigned_to' => $request->assigned_to,
     ]);
 
     return redirect()
@@ -69,6 +98,12 @@ public function show(Ticket $ticket)
 }
     public function destroy(Ticket $ticket)
 {
+
+Activity::create([
+    'ticket_id' => $ticket->id,
+    'user_id' => Auth::id(),
+    'action' => 'deleted the ticket'
+]);
     $ticket->delete();
 
     return redirect()

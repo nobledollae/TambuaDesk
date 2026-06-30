@@ -33,21 +33,45 @@
                     @yield('title')
                 </h1>
 
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-6">
 
+                    <!-- User Details -->
                     <div class="text-right">
+
                         <div class="font-bold text-gray-800">
                             {{ Auth::user()->name }}
                         </div>
 
-                        <div class="text-sm text-gray-500 capitalize">
+                        <div class="text-sm text-blue-600 capitalize font-semibold">
                             {{ Auth::user()->role }}
                         </div>
+
                     </div>
 
-                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                    <!-- Avatar -->
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow">
                         {{ strtoupper(substr(Auth::user()->name,0,1)) }}
                     </div>
+
+                    <!-- Profile Button -->
+                    <a href="{{ route('profile.edit') }}"
+                       class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition">
+                        ⚙ Profile
+                    </a>
+
+                    <!-- Logout -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+
+                            🚪 Logout
+
+                        </button>
+
+                    </form>
 
                 </div>
 
@@ -55,7 +79,7 @@
 
         </header>
 
-        <!-- Main Content -->
+        <!-- Page Content -->
         <main class="flex-1 p-8">
 
             @yield('content')

@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/admin-test', function () {
     return 'Welcome Administrator!';
@@ -18,6 +19,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])
+    ->name('comments.store');
     Route::resource('tickets', TicketController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

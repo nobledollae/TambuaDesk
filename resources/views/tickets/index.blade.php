@@ -24,17 +24,14 @@
         <table class="w-full">
 
             <thead class="bg-gray-100">
-
                 <tr>
-
                     <th class="p-4 text-left">Ticket No.</th>
                     <th class="p-4 text-left">Title</th>
                     <th class="p-4 text-left">Priority</th>
                     <th class="p-4 text-left">Status</th>
+                    <th class="p-4 text-left">Technician</th>
                     <th class="p-4 text-center">Actions</th>
-
                 </tr>
-
             </thead>
 
             <tbody>
@@ -43,9 +40,13 @@
 
                 <tr class="border-b hover:bg-gray-50">
 
-                    <td class="p-4">{{ $ticket->ticket_number }}</td>
+                    <td class="p-4">
+                        {{ $ticket->ticket_number }}
+                    </td>
 
-                    <td class="p-4">{{ $ticket->title }}</td>
+                    <td class="p-4">
+                        {{ $ticket->title }}
+                    </td>
 
                     <td class="p-4">
                         <span class="px-3 py-1 rounded-full bg-red-100 text-red-700">
@@ -53,44 +54,62 @@
                         </span>
                     </td>
 
+                    {{-- STATUS --}}
                     <td class="p-4">
                         <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700">
                             {{ $ticket->status }}
                         </span>
                     </td>
 
-                    <td class="p-4 text-center space-x-2">
+                    {{-- TECHNICIAN --}}
+                    <td class="p-4">
 
-                      <div class="flex justify-center items-center space-x-3">
+                        @if($ticket->technician)
 
-    <a href="{{ route('tickets.show', $ticket) }}"
-       class="text-blue-600 hover:text-blue-800 font-semibold">
-        View
-    </a>
+                            <span class="text-green-700 font-semibold">
+                                {{ $ticket->technician->name }}
+                            </span>
 
-    <a href="{{ route('tickets.edit', $ticket) }}"
-       class="text-green-600 hover:text-green-800 font-semibold">
-        Edit
-    </a>
+                        @else
 
-    <form action="{{ route('tickets.destroy', $ticket) }}"
-          method="POST"
-          onsubmit="return confirm('Are you sure you want to delete this ticket?');">
+                            <span class="text-gray-500 italic">
+                                Not Assigned
+                            </span>
 
-        @csrf
-        @method('DELETE')
+                        @endif
 
-        <button
-            type="submit"
-            class="text-red-600 hover:text-red-800 font-semibold">
+                    </td>
 
-            Delete
+                    {{-- ACTIONS --}}
+                    <td class="p-4">
 
-        </button>
+                        <div class="flex justify-center items-center gap-4">
 
-    </form>
+                            <a href="{{ route('tickets.show', $ticket) }}"
+                               class="text-blue-600 hover:text-blue-800 font-semibold">
+                                View
+                            </a>
 
-</div>
+                            <a href="{{ route('tickets.edit', $ticket) }}"
+                               class="text-green-600 hover:text-green-800 font-semibold">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('tickets.destroy', $ticket) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Are you sure you want to delete this ticket?');">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="text-red-600 hover:text-red-800 font-semibold">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
 
                     </td>
 
@@ -99,11 +118,9 @@
             @empty
 
                 <tr>
-
-                    <td colspan="5" class="text-center py-10 text-gray-500">
+                    <td colspan="6" class="text-center py-10 text-gray-500">
                         No tickets found.
                     </td>
-
                 </tr>
 
             @endforelse
@@ -115,9 +132,7 @@
     </div>
 
     <div class="p-6">
-
         {{ $tickets->links() }}
-
     </div>
 
 </div>
