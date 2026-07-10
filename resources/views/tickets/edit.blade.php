@@ -94,13 +94,21 @@
                             name="priority"
                             class="w-full border rounded-lg px-4 py-3">
 
-                            <option value="Low" {{ $ticket->priority == 'Low' ? 'selected' : '' }}>Low</option>
+                            <option value="Low" {{ $ticket->priority == 'Low' ? 'selected' : '' }}>
+                                Low
+                            </option>
 
-                            <option value="Medium" {{ $ticket->priority == 'Medium' ? 'selected' : '' }}>Medium</option>
+                            <option value="Medium" {{ $ticket->priority == 'Medium' ? 'selected' : '' }}>
+                                Medium
+                            </option>
 
-                            <option value="High" {{ $ticket->priority == 'High' ? 'selected' : '' }}>High</option>
+                            <option value="High" {{ $ticket->priority == 'High' ? 'selected' : '' }}>
+                                High
+                            </option>
 
-                            <option value="Critical" {{ $ticket->priority == 'Critical' ? 'selected' : '' }}>Critical</option>
+                            <option value="Critical" {{ $ticket->priority == 'Critical' ? 'selected' : '' }}>
+                                Critical
+                            </option>
 
                         </select>
 
@@ -117,21 +125,33 @@
                             name="status"
                             class="w-full border rounded-lg px-4 py-3">
 
-                            <option value="Open" {{ $ticket->status == 'Open' ? 'selected' : '' }}>Open</option>
+                            <option value="Open" {{ $ticket->status == 'Open' ? 'selected' : '' }}>
+                                Open
+                            </option>
 
-                            <option value="Assigned" {{ $ticket->status == 'Assigned' ? 'selected' : '' }}>Assigned</option>
+                            <option value="Assigned" {{ $ticket->status == 'Assigned' ? 'selected' : '' }}>
+                                Assigned
+                            </option>
 
-                            <option value="In Progress" {{ $ticket->status == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="In Progress" {{ $ticket->status == 'In Progress' ? 'selected' : '' }}>
+                                In Progress
+                            </option>
 
-                            <option value="Resolved" {{ $ticket->status == 'Resolved' ? 'selected' : '' }}>Resolved</option>
+                            <option value="Resolved" {{ $ticket->status == 'Resolved' ? 'selected' : '' }}>
+                                Resolved
+                            </option>
 
-                            <option value="Closed" {{ $ticket->status == 'Closed' ? 'selected' : '' }}>Closed</option>
+                            <option value="Closed" {{ $ticket->status == 'Closed' ? 'selected' : '' }}>
+                                Closed
+                            </option>
 
                         </select>
 
                     </div>
 
-                    <!-- Technician -->
+                    <!-- Technician (Admins Only) -->
+                    @if(auth()->user()->role == 'admin')
+
                     <div>
 
                         <label class="block font-semibold mb-2">
@@ -142,7 +162,9 @@
                             name="assigned_to"
                             class="w-full border rounded-lg px-4 py-3">
 
-                            <option value="">Not Assigned</option>
+                            <option value="">
+                                Not Assigned
+                            </option>
 
                             @foreach($technicians as $tech)
 
@@ -159,6 +181,8 @@
                         </select>
 
                     </div>
+
+                    @endif
 
                 </div>
 

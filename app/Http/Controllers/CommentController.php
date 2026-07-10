@@ -23,12 +23,12 @@ class CommentController extends Controller
             'comment' => $request->comment
         ]);
 
-        Activity::create([
-    'ticket_id' => $ticket->id,
-    'user_id' => Auth::id(),
-    'action' => 'added a comment'
+       Activity::create([
+    'ticket_number' => $ticket->ticket_number,
+    'ticket_title'  => $ticket->title,
+    'user_id'       => Auth::id(),
+    'action'        => 'added a comment',
 ]);
-
         return back()->with('success', 'Comment added successfully.');
     }
 }

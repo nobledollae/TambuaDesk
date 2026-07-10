@@ -2,24 +2,55 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::create([
+            'name' => 'System Admin',
+            'email' => 'admin@example.com',
+            'role' => 'admin',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
+        User::create([
+            'name' => 'John Technician',
+            'email' => 'john@example.com',
+            'role' => 'technician',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::create([
+            'name' => 'Mary Technician',
+            'email' => 'mary@example.com',
+            'role' => 'technician',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::create([
+            'name' => 'Noble Employee',
+            'email' => 'noble@example.com',
+            'role' => 'employee',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::create([
+            'name' => 'Test Employee',
             'email' => 'test@example.com',
+            'role' => 'employee',
+            'status' => 'active',
+            'password' => Hash::make('password'),
         ]);
     }
 }

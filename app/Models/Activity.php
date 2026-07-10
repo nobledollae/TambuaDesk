@@ -7,15 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     protected $fillable = [
-        'ticket_id',
+        'ticket_number',
+        'ticket_title',
         'user_id',
         'action',
     ];
-
-    public function ticket()
-    {
-        return $this->belongsTo(Ticket::class);
-    }
 
     public function user()
     {

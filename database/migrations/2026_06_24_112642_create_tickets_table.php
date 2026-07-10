@@ -8,24 +8,47 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('tickets', function (Blueprint $table) {
+        Schema::create('tickets', function (Blueprint $table) {
 
+            $table->id();
+
+            $table->string('ticket_number')->unique();
+
+            $table->string('title');
+
+            $table->text('description');
+
+            $table->enum('priority', [
+                'Low',
+                'Medium',
+                'High',
+                'Critical'
+            ]);
+
+            $table->enum('status', [
+                'Open',
+                'Assigned',
+                'In Progress',
+                'Resolved',
+                'Closed'
+            ])->default('Open');
+
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            // Technician assigned to this ticket
             $table->foreignId('assigned_to')
-                  ->nullable()
-                  ->after('created_by')
-                  ->constrained('users')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::table('tickets', function (Blueprint $table) {
-
-            $table->dropForeign(['assigned_to']);
-            $table->dropColumn('assigned_to');
-
-        });
+        Schema::dropIfExists('tickets');
     }
 };

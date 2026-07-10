@@ -291,19 +291,15 @@
 
     <div class="p-6">
 
-        @forelse($ticket->activities as $activity)
+        @forelse($activities as $activity)
 
             <div class="flex items-start space-x-4 mb-6">
 
-                <!-- Circle -->
-
                 <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
 
-                    {{ strtoupper(substr($activity->user->name,0,1)) }}
+                    {{ strtoupper(substr($activity->user->name ?? 'S', 0, 1)) }}
 
                 </div>
-
-                <!-- Activity -->
 
                 <div class="flex-1">
 
@@ -313,7 +309,7 @@
 
                             <span class="font-semibold">
 
-                                {{ $activity->user->name }}
+                                {{ $activity->user->name ?? 'System' }}
 
                             </span>
 
@@ -341,7 +337,7 @@
 
             <div class="text-center text-gray-500 py-6">
 
-                No activity recorded yet.
+                No activity recorded for this ticket.
 
             </div>
 

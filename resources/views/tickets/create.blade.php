@@ -1,147 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Ticket</title>
+@extends('layouts.app')
 
-    <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#f4f6f9;
-            margin:0;
-            padding:40px;
-        }
+@section('title', 'Create Ticket')
 
-        .container{
-            width:600px;
-            margin:auto;
-            background:#fff;
-            padding:30px;
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,.1);
-        }
+@section('content')
 
-        h2{
-            text-align:center;
-            color:#333;
-        }
+<div class="max-w-3xl mx-auto">
 
-        label{
-            display:block;
-            margin-top:15px;
-            font-weight:bold;
-        }
+    <div class="bg-white rounded-xl shadow-lg">
 
-        input, textarea, select{
-            width:100%;
-            padding:10px;
-            margin-top:5px;
-            border:1px solid #ccc;
-            border-radius:5px;
-        }
+        <div class="flex justify-between items-center border-b p-6">
 
-        textarea{
-            height:120px;
-            resize:vertical;
-        }
+            <h2 class="text-2xl font-bold">
+                Create IT Support Ticket
+            </h2>
 
-        button{
-            margin-top:20px;
-            width:100%;
-            padding:12px;
-            background:#0d6efd;
-            color:white;
-            border:none;
-            border-radius:5px;
-            cursor:pointer;
-            font-size:16px;
-        }
+            <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('dashboard') }}"
+               class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg font-semibold">
 
-        button:hover{
-            background:#0b5ed7;
-        }
+                ← Back
 
-        .success{
-            background:#d1e7dd;
-            color:#0f5132;
-            padding:10px;
-            border-radius:5px;
-            margin-bottom:15px;
-        }
+            </a>
 
-        .error{
-            color:red;
-            margin-top:5px;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <h2>Create IT Support Ticket</h2>
-
-    @if(session('success'))
-        <div class="success">
-            {{ session('success') }}
         </div>
-    @endif
 
-    <form action="/tickets" method="POST">
+        <div class="p-6">
 
-        @csrf
+            @if(session('success'))
 
-        <label>Ticket Title</label>
+                <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg mb-6">
 
-        <input
-            type="text"
-            name="title"
-            value="{{ old('title') }}"
-        >
+                    {{ session('success') }}
 
-        @error('title')
-            <div class="error">{{ $message }}</div>
-        @enderror
+                </div>
 
-        <label>Description</label>
+            @endif
 
-        <textarea
-            name="description"
-        >{{ old('description') }}</textarea>
+            <form action="{{ route('tickets.store') }}" method="POST">
 
-        @error('description')
-            <div class="error">{{ $message }}</div>
-        @enderror
+                @csrf
 
-        <label>Priority</label>
+                <div class="mb-5">
 
-        <select name="priority">
+                    <label class="block font-semibold mb-2">
+                        Ticket Title
+                    </label>
 
-            <option value="">-- Select Priority --</option>
+                    <input
+                        type="text"
+                        name="title"
+                        value="{{ old('title') }}"
+                        class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500">
 
-            <option value="Low">Low</option>
+                    @error('title')
 
-            <option value="Medium">Medium</option>
+                        <p class="text-red-600 mt-2">
 
-            <option value="High">High</option>
+                            {{ $message }}
 
-            <option value="Critical">Critical</option>
+                        </p>
 
-        </select>
+                    @enderror
 
-        @error('priority')
-            <div class="error">{{ $message }}</div>
-        @enderror
+                </div>
 
-        <button type="submit">
-            Submit Ticket
-        </button>
+                <div class="mb-5">
 
-    </form>
+                    <label class="block font-semibold mb-2">
+                        Description
+                    </label>
+
+                    <textarea
+                        name="description"
+                        rows="6"
+                        class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500">{{ old('description') }}</textarea>
+
+                    @error('description')
+
+                        <p class="text-red-600 mt-2">
+
+                            {{ $message }}
+
+                        </p>
+
+                    @enderror
+
+                </div>
+
+                <div class="mb-6">
+
+                    <label class="block font-semibold mb-2">
+                        Priority
+                    </label>
+
+                    <select
+                        name="priority"
+                        class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500">
+
+                        <option value="">-- Select Priority --</option>
+
+                        <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>
+                            Low
+                        </option>
+
+                        <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>
+                            Medium
+                        </option>
+
+                        <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>
+                            High
+                        </option>
+
+                        <option value="Critical" {{ old('priority') == 'Critical' ? 'selected' : '' }}>
+                            Critical
+                        </option>
+
+                    </select>
+
+                    @error('priority')
+
+                        <p class="text-red-600 mt-2">
+
+                            {{ $message }}
+
+                        </p>
+
+                    @enderror
+
+                </div>
+
+                <div class="flex justify-end gap-3">
+
+                    <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('dashboard') }}"
+                       class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg">
+
+                        Cancel
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold">
+
+                        Submit Ticket
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </div>
 
-</body>
-</html>
+@endsection

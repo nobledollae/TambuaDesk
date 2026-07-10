@@ -16,14 +16,16 @@
     <!-- Navigation -->
     <nav class="flex-1 mt-6">
 
+        <!-- Dashboard -->
         <a href="{{ route('dashboard') }}"
-           class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg bg-blue-600 hover:bg-blue-500 transition">
+           class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
 
             <span>🏠</span>
             <span>Dashboard</span>
 
         </a>
 
+        <!-- Tickets -->
         <a href="{{ route('tickets.index') }}"
            class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
 
@@ -32,26 +34,39 @@
 
         </a>
 
-        @if(Auth::user()->role == 'admin')
+        <!-- Admin Only -->
+        @if(auth()->user()->role == 'admin')
 
-        <a href="#"
-           class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
+            <!-- Users -->
+            <a href="{{ route('users.index') }}"
+               class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
 
-            <span>👥</span>
-            <span>Users</span>
+                <span>👥</span>
+                <span>Users</span>
 
-        </a>
+            </a>
 
-        <a href="#"
-           class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
+            <!-- Reports -->
+            <a href="{{ route('reports.index') }}"
+               class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
 
-            <span>📊</span>
-            <span>Reports</span>
+                <span>📊</span>
+                <span>Reports</span>
 
-        </a>
+            </a>
 
         @endif
 
+        <a href="{{ route('activities.index') }}"
+   class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg
+   {{ request()->routeIs('activities.*') ? 'bg-blue-600' : 'hover:bg-blue-800' }} transition">
+
+    <span>📜</span>
+    <span>Activity Logs</span>
+
+</a>
+
+        <!-- Settings -->
         <a href="{{ route('profile.edit') }}"
            class="flex items-center gap-3 px-6 py-3 mx-3 mb-2 rounded-lg hover:bg-blue-800 transition">
 
