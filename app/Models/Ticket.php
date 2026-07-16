@@ -17,6 +17,11 @@ class Ticket extends Model
         'assigned_to',
     ];
 
+    public function attachments()
+{
+    return $this->hasMany(Attachment::class);
+}
+
     public function comments()
 {
     return $this->hasMany(Comment::class)->latest();

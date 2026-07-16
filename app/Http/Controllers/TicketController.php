@@ -8,6 +8,9 @@ use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\TicketAssignedNotification;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketCreatedMail;
+
 
 class TicketController extends Controller
 {
@@ -139,6 +142,20 @@ class TicketController extends Controller
             'created_by'    => Auth::id(),
         ]);
 
+        // Email the employee who created the ticket
+Mail::to($ticket->creator->email)
+    ->send(new TicketCreatedMail($ticket));
+
+// Email all administrators
+$admins = User::where('role', 'admin')->get();
+
+foreach ($admins as $admin) {
+
+    Mail::to($admin->email)
+        ->send(new TicketCreatedMail($ticket));
+
+}
+
         return redirect()
             ->route('tickets.create')
             ->with('success', 'Ticket created successfully!');
@@ -171,7 +188,8 @@ class TicketController extends Controller
         $ticket->load(
     'comments.user',
     'technician',
-    'creator'
+    'creator',
+    'attachments.user'
 );
 
 $activities = Activity::with('user')

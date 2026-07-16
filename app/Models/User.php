@@ -16,13 +16,12 @@ class User extends Authenticatable
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'name',
-        'email',
-        'role',
-        'status',
-        'password',
-    ];
-
+    'name',
+    'email',
+    'password',
+    'role',
+    'profile_photo',
+];
     /**
      * The attributes that should be hidden for serialization.
      */
@@ -35,12 +34,13 @@ class User extends Authenticatable
      * Attribute casting.
      */
     protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+{
+    return [
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+}
 
     /**
      * Comments made by this user.
@@ -49,6 +49,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function attachments()
+{
+    return $this->hasMany(Attachment::class);
+}
 
     /**
      * Tickets created by this user.
@@ -65,4 +70,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Ticket::class, 'assigned_to');
     }
+
+    public function getProfilePhotoUrlAttribute()
+{
+    if ($this->profile_photo) {
+
+        return asset('storage/'.$this->profile_photo);
+
+    }
+
+    return 'https://ui-avatars.com/api/?name='
+            . urlencode($this->name)
+            . '&background=2563eb'
+            . '&color=ffffff'
+            . '&size=200';
+}
 }

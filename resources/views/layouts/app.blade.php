@@ -48,22 +48,127 @@
         class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
 
 </form>
-                    <!-- Notification -->
-                    <button class="relative text-2xl hover:text-blue-600 transition">
+                   <!-- Notification Dropdown -->
+<div class="relative" id="notificationDropdown">
 
-                        🔔
+    <button
+        id="notificationButton"
+        class="relative text-2xl hover:text-blue-600 transition">
 
-                        @if(auth()->user()->unreadNotifications->count())
+        🔔
 
-                            <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        <span
+            id="notificationCount"
+            class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center
+            {{ auth()->user()->unreadNotifications->count() ? '' : 'hidden' }}">
 
-                                {{ auth()->user()->unreadNotifications->count() }}
+            {{ auth()->user()->unreadNotifications->count() }}
 
-                            </span>
+        </span>
 
-                        @endif
+    </button>
 
-                    </button>
+    <div
+        id="notificationMenu"
+        class="hidden absolute right-0 mt-4 w-96 bg-white rounded-xl shadow-2xl border z-50">
+
+        <div class="flex justify-between items-center px-5 py-4 border-b">
+
+            <h2 class="font-bold text-lg">
+
+                Notifications
+
+            </h2>
+
+            <a
+                href="{{ route('notifications.readAll') }}"
+                onclick="event.preventDefault();document.getElementById('readAllForm').submit();"
+                class="text-sm text-blue-600 hover:underline">
+
+                Mark all as read
+
+            </a>
+
+            <form
+                id="readAllForm"
+                action="{{ route('notifications.readAll') }}"
+                method="POST">
+
+                @csrf
+                @method('PATCH')
+
+            </form>
+
+        </div>
+
+        <div
+            id="notificationList"
+            class="max-h-96 overflow-y-auto">
+
+            @forelse(auth()->user()->notifications->take(8) as $notification)
+
+                <a
+                    href="{{ route('notifications.read',$notification->id) }}"
+                    onclick="event.preventDefault();document.getElementById('notification-{{ $notification->id }}').submit();"
+                    class="block px-5 py-4 border-b hover:bg-gray-50">
+
+                    <div class="font-semibold">
+
+                        {{ $notification->data['title'] ?? 'Notification' }}
+
+                    </div>
+
+                    <div class="text-sm text-gray-500 mt-1">
+
+                        {{ $notification->data['message'] ?? '' }}
+
+                    </div>
+
+                    <div class="text-xs text-gray-400 mt-2">
+
+                        {{ $notification->created_at->diffForHumans() }}
+
+                    </div>
+
+                </a>
+
+                <form
+                    id="notification-{{ $notification->id }}"
+                    action="{{ route('notifications.read',$notification->id) }}"
+                    method="POST">
+
+                    @csrf
+                    @method('PATCH')
+
+                </form>
+
+            @empty
+
+                <div class="text-center text-gray-500 py-8">
+
+                    No notifications.
+
+                </div>
+
+            @endforelse
+
+        </div>
+
+        <div class="p-4 border-t text-center">
+
+            <a
+                href="{{ route('notifications.index') }}"
+                class="text-blue-600 hover:underline font-semibold">
+
+                View All Notifications
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
 
                     <!-- User Details -->
                     <div class="text-right">
@@ -82,20 +187,17 @@
 
                     </div>
 
-                    <!-- Avatar -->
-                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow">
+                   <!-- Avatar -->
+<div class="relative">
 
-                        {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+    <img
+        src="{{ Auth::user()->profile_photo_url }}"
+        alt="Profile Photo"
+        class="w-12 h-12 rounded-full object-cover border-2 border-blue-600 shadow">
 
-                    </div>
+    <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
 
-                    <!-- Profile -->
-                    <a href="{{ route('profile.edit') }}"
-                       class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg font-semibold transition">
-
-                        ⚙ Profile
-
-                    </a>
+</div>
 
                     <!-- Logout -->
                     <form method="POST" action="{{ route('logout') }}">
@@ -128,6 +230,36 @@
     </div>
 
 </div>
+
+<script>
+
+const notificationButton =
+document.getElementById('notificationButton');
+
+const notificationMenu =
+document.getElementById('notificationMenu');
+
+notificationButton.addEventListener('click',function(e){
+
+    e.stopPropagation();
+
+    notificationMenu.classList.toggle('hidden');
+
+});
+
+document.addEventListener('click',function(){
+
+    notificationMenu.classList.add('hidden');
+
+});
+
+notificationMenu.addEventListener('click',function(e){
+
+    e.stopPropagation();
+
+});
+
+</script>
 
 </body>
 </html>

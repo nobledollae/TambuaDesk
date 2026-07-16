@@ -9,6 +9,50 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\AttachmentController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestEmail;
+use App\Http\Controllers\NotificationController;
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.readAll');
+
+    Route::get('/notifications/latest', [NotificationController::class, 'latest'])
+        ->name('notifications.latest');
+
+});
+
+Route::get('/test-email', function () {
+
+    Mail::to('nobleventures128@gmail.com')
+        ->send(new TestEmail());
+
+    return 'Email sent successfully!';
+
+});
+
+Route::post(
+    '/tickets/{ticket}/attachments',
+    [AttachmentController::class,'store']
+)->name('attachments.store');
+
+Route::get(
+    '/attachments/{attachment}/download',
+    [AttachmentController::class,'download']
+)->name('attachments.download');
+
+Route::delete(
+    '/attachments/{attachment}',
+    [AttachmentController::class,'destroy']
+)->name('attachments.destroy');
 
 Route::get('/search', [SearchController::class, 'index'])
     ->name('search')

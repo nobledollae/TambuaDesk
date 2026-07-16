@@ -6,6 +6,11 @@ use App\Models\Activity;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketAssignedMail;
+use App\Mail\TicketStatusChangedMail;
+use App\Mail\TicketResolvedMail;
+use App\Mail\TicketClosedMail;
 
 class TicketObserver
 {
@@ -79,6 +84,65 @@ class TicketObserver
                 'user_id'       => Auth::id(),
                 'action'        => $action,
             ]);
+
+            if ($newValue == 'Resolved') {
+
+    Mail::to($ticket->creator->email)
+        ->send(new TicketResolvedMail($ticket));
+
+}
+elseif ($newValue == 'Closed') {
+
+    Mail::to($ticket->creator->email)
+        ->send(new TicketClosedMail($ticket));
+
+}
+else {
+
+    Mail::to($ticket->creator->email)
+        ->send(
+            new TicketStatusChangedMail(
+                $ticket,
+                $oldValue,
+                $newValue
+            )
+        );
+
+}
+
+            if ($newValue == 'Resolved') {
+
+    Mail::to($ticket->creator->email)
+        ->send(new TicketResolvedMail($ticket));
+
+} else {
+
+    Mail::to($ticket->creator->email)
+        ->send(
+            new TicketStatusChangedMail(
+                $ticket,
+                $oldValue,
+                $newValue
+            )
+        );
+
+}
+
+            Mail::to($ticket->creator->email)
+    ->send(
+        new TicketStatusChangedMail(
+            $ticket,
+            $oldValue,
+            $newValue
+        )
+    );
+
+            if ($field === 'assigned_to' && $ticket->technician) {
+
+    Mail::to($ticket->technician->email)
+        ->send(new TicketAssignedMail($ticket));
+
+}
         }
     }
 

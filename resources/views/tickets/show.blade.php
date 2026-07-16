@@ -277,6 +277,276 @@
 
 </div>
 
+{{-- ===========================
+    ATTACHMENTS
+=========================== --}}
+
+<div class="bg-white rounded-xl shadow-lg mt-8">
+
+    <div class="border-b px-6 py-4 flex justify-between items-center">
+
+        <div>
+
+            <h2 class="text-2xl font-bold">
+                Attachments
+            </h2>
+
+            <p class="text-gray-500 text-sm mt-1">
+                Upload screenshots, PDFs, documents and other supporting files.
+            </p>
+
+        </div>
+
+    </div>
+
+    {{-- Upload Area --}}
+    <div class="p-6">
+
+        <form
+            id="uploadForm"
+            action="{{ route('attachments.store',$ticket) }}"
+            method="POST"
+            enctype="multipart/form-data">
+
+            @csrf
+
+            <label
+                id="drop-area"
+                for="attachment"
+                class="block border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer transition hover:border-blue-500 hover:bg-blue-50">
+
+                <div class="text-6xl">
+                    📁
+                </div>
+
+                <h3 class="text-xl font-semibold mt-4">
+
+                    Drag & Drop Files Here
+
+                </h3>
+
+                <p class="text-gray-500 mt-2">
+
+                    or click to browse
+
+                </p>
+
+                <p class="text-sm text-gray-400 mt-3">
+
+                    Images • PDF • Word • Excel • ZIP
+
+                </p>
+
+            </label>
+
+            <input
+                type="file"
+                id="attachment"
+                name="attachment"
+                class="hidden">
+
+            <div
+                id="selected-file"
+                class="mt-5 text-center text-gray-600 italic">
+
+                No file selected
+
+            </div>
+
+            <div
+                id="uploading"
+                class="hidden mt-5 text-center text-blue-600 font-semibold">
+
+                Uploading...
+
+            </div>
+
+        </form>
+
+        @error('attachment')
+
+            <div class="mt-4 text-red-600">
+
+                {{ $message }}
+
+            </div>
+
+        @enderror
+
+    </div>
+
+    {{-- Attachment List --}}
+    <div class="divide-y">
+
+        @forelse($ticket->attachments as $attachment)
+
+            @php
+
+                $extension = strtolower(pathinfo($attachment->original_name, PATHINFO_EXTENSION));
+
+                $imageExtensions = ['jpg','jpeg','png','gif','webp'];
+
+            @endphp
+
+            <div class="flex justify-between items-center p-6 hover:bg-gray-50 transition">
+
+                <div class="flex items-start gap-5">
+
+                    @if(in_array($extension,$imageExtensions))
+
+                        <img
+                            src="{{ asset('storage/'.$attachment->file_path) }}"
+                            data-full="{{ asset('storage/'.$attachment->file_path) }}"
+                            class="attachment-image w-24 h-24 rounded-lg border object-cover cursor-pointer hover:scale-105 transition">
+
+                    @else
+
+                        <div class="text-5xl">
+
+                            @switch($extension)
+
+                                @case('pdf')
+                                    📄
+                                    @break
+
+                                @case('doc')
+                                @case('docx')
+                                    📘
+                                    @break
+
+                                @case('xls')
+                                @case('xlsx')
+                                    📊
+                                    @break
+
+                                @case('zip')
+                                    📦
+                                    @break
+
+                                @default
+                                    📁
+
+                            @endswitch
+
+                        </div>
+
+                    @endif
+
+                    <div>
+
+                        <div class="font-semibold text-lg">
+
+                            {{ $attachment->original_name }}
+
+                        </div>
+
+                        <div class="text-gray-500 text-sm mt-2">
+
+                            {{ strtoupper($extension) }}
+
+                            •
+
+                            {{ number_format($attachment->file_size/1024,2) }} KB
+
+                        </div>
+
+                        <div class="text-gray-400 text-sm mt-1">
+
+                            Uploaded by
+
+                            <strong>{{ $attachment->user->name }}</strong>
+
+                            •
+
+                            {{ $attachment->created_at->diffForHumans() }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="flex gap-3">
+
+                    <a
+                        href="{{ route('attachments.download',$attachment) }}"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+
+                        Download
+
+                    </a>
+
+                    @if(auth()->user()->role=='admin' || auth()->id()==$attachment->user_id)
+
+                        <form
+                            action="{{ route('attachments.destroy',$attachment) }}"
+                            method="POST"
+                            onsubmit="return confirm('Delete this attachment?')">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+
+                                Delete
+
+                            </button>
+
+                        </form>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="text-center py-10 text-gray-500">
+
+                No attachments uploaded yet.
+
+            </div>
+
+        @endforelse
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     IMAGE PREVIEW MODAL
+====================================== -->
+
+<div
+    id="imageModal"
+    class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50">
+
+    <div class="relative max-w-6xl max-h-screen p-4">
+
+        <!-- Close Button -->
+        <button
+            id="closeModal"
+            type="button"
+            class="absolute -top-12 right-0 text-white text-5xl hover:text-gray-300 transition">
+
+            &times;
+
+        </button>
+
+        <!-- Image -->
+        <img
+            id="modalImage"
+            src=""
+            alt="Attachment Preview"
+            class="max-h-[90vh] max-w-[90vw] rounded-xl shadow-2xl object-contain transition duration-300">
+
+    </div>
+
+</div>
+
 <!-- Activity Timeline -->
 
 <div class="bg-white rounded-xl shadow-lg mt-8">
@@ -346,5 +616,166 @@
     </div>
 
 </div>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('attachment');
+    const dropArea = document.getElementById('drop-area');
+    const selectedFile = document.getElementById('selected-file');
+    const uploading = document.getElementById('uploading');
+
+    // ==========================
+    // AUTO UPLOAD
+    // ==========================
+
+    function uploadFile(file){
+
+        if(!file) return;
+
+        selectedFile.innerHTML =
+            "<strong>Selected:</strong> " +
+            file.name +
+            " (" +
+            Math.round(file.size / 1024) +
+            " KB)";
+
+        uploading.classList.remove('hidden');
+
+        setTimeout(function(){
+
+            uploadForm.submit();
+
+        },500);
+
+    }
+
+    // ==========================
+    // FILE SELECT
+    // ==========================
+
+    fileInput.addEventListener('change', function(){
+
+        if(this.files.length){
+
+            uploadFile(this.files[0]);
+
+        }
+
+    });
+
+    // ==========================
+    // DRAG OVER
+    // ==========================
+
+    dropArea.addEventListener('dragover', function(e){
+
+        e.preventDefault();
+
+        this.classList.add(
+            'border-blue-600',
+            'bg-blue-50'
+        );
+
+    });
+
+    // ==========================
+    // DRAG LEAVE
+    // ==========================
+
+    dropArea.addEventListener('dragleave', function(){
+
+        this.classList.remove(
+            'border-blue-600',
+            'bg-blue-50'
+        );
+
+    });
+
+    // ==========================
+    // DROP
+    // ==========================
+
+    dropArea.addEventListener('drop', function(e){
+
+        e.preventDefault();
+
+        this.classList.remove(
+            'border-blue-600',
+            'bg-blue-50'
+        );
+
+        const files = e.dataTransfer.files;
+
+        if(files.length){
+
+            fileInput.files = files;
+
+            uploadFile(files[0]);
+
+        }
+
+    });
+
+    // ==========================
+    // IMAGE PREVIEW MODAL
+    // ==========================
+
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const closeModal = document.getElementById('closeModal');
+
+    document.querySelectorAll('.attachment-image').forEach(function(image){
+
+        image.addEventListener('click', function(){
+
+            modalImage.src = this.dataset.full;
+
+            modal.classList.remove('hidden');
+
+            modal.classList.add('flex');
+
+        });
+
+    });
+
+    function hideModal(){
+
+        modal.classList.add('hidden');
+
+        modal.classList.remove('flex');
+
+        modalImage.src = "";
+
+    }
+
+    closeModal.addEventListener('click', hideModal);
+
+    modal.addEventListener('click', function(e){
+
+        if(e.target === modal){
+
+            hideModal();
+
+        }
+
+    });
+
+    document.addEventListener('keydown', function(e){
+
+        if(e.key === 'Escape'){
+
+            hideModal();
+
+        }
+
+    });
+
+});
+
+</script>
 
 @endsection
